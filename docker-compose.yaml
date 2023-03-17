@@ -91,11 +91,12 @@ services:
       - boot-otel-tempo-provider1
 
   promtail:
-    image: grafana/promtail:2.2.0
+    image: grafana/promtail:2.6.0
     command: -config.file=/etc/promtail/promtail-local.yaml
     volumes:
       - ./etc/promtail-local.yaml:/etc/promtail/promtail-local.yaml
       - ./data/logs:/app/logs
+      - /var/run/docker.sock:/var/run/docker.sock
     depends_on:
       - boot-otel-tempo-api
       - loki
@@ -124,7 +125,7 @@ services:
       - volume_exporter
 
   grafana:
-    image: grafana/grafana:7.4.0-ubuntu
+    image: grafana/grafana:9.4.3-ubuntu
     volumes:
       - ./data/grafana-data/datasources:/etc/grafana/provisioning/datasources
       - ./data/grafana-data/dashboards-provisioning:/etc/grafana/provisioning/dashboards
@@ -141,7 +142,7 @@ services:
       - loki
 
   nginx:
-    image: nginx:latest
+    image: nginx:1.23
     ports:
       - "80:80"
     volumes:
@@ -164,3 +165,13 @@ services:
     image: prom/node-exporter:latest
     ports:
       - "9100:9100"
+  flaskapp:
+    pull_policy: build
+    build:
+      context: flaskapp
+      target: builder
+    # flask requires SIGINT to stop gracefully
+    # (default stop signal from Compose is SIGTERM)
+    stop_signal: SIGINT
+    ports:
+      - '8000:8000'
