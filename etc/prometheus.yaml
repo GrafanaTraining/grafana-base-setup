@@ -1,6 +1,6 @@
 global:
   scrape_interval:     30s
-  Scrape_timeout:      29s
+  scrape_timeout:      29s
   evaluation_interval: 30s
 
 scrape_configs:
