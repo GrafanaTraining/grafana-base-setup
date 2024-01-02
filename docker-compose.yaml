@@ -126,6 +126,8 @@ services:
 
   grafana:
     image: grafana/grafana-oss:10.2.1-ubuntu
+    deploy:
+      replicas: 0 #since we are using binary based grafana instead of container
     volumes:
       - ./data/grafana-data/datasources:/etc/grafana/provisioning/datasources
       - ./data/grafana-data/dashboards-provisioning:/etc/grafana/provisioning/dashboards
